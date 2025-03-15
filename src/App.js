@@ -1,14 +1,17 @@
 // Import React hooks and components
-import React, { useState, useEffect } from 'react';
-import FullCalendar from '@fullcalendar/react';
-import dayGridPlugin from '@fullcalendar/daygrid';
-import interactionPlugin from '@fullcalendar/interaction';
+import React, {useState, useEffect } from 'react';
+import { Calendar, momentLocalizer } from 'react-big-calendar'
+import moment from 'moment'
 import axios from 'axios';
-import EventForm from './components/EventForm';
+import RbcEventForm from './components/RbcEventForm';
 import './App.css';
+import './react-big-calendar.css';
+import "react-big-calendar/lib/addons/dragAndDrop/styles.css";
+import "react-big-calendar/lib/css/react-big-calendar.css";
+import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
 
 function App() {
-  const [events, setEvents] = useState([]); // State for calendar events
+  const [rbcEvents, setRbcEvents] = useState([]); // State for calendar events
   const API_URL = process.env.REACT_APP_API_URL;
 
   // Fetch schedules on component mount
@@ -16,51 +19,72 @@ function App() {
     fetchSchedules();
   }, []);
 
+  const localizer = momentLocalizer(moment)
+  const DnDCalendar = withDragAndDrop(Calendar);
   const fetchSchedules = async () => {
     // Retrieve schedules from the backend API
     try {
-      const response = await axios.get(`${API_URL}/schedules`);
-      const calendarEvents = response.data.map(schedule => ({
-        title: `${schedule.title} (Mood: ${schedule.mood})`,
-        start: schedule.date,
-        location: schedule.location,
+      const rbcResponse = await axios.get(`${API_URL}/rbc-schedules`);
+      const rbcCalendarEvents = rbcResponse.data.map(rbcSchedule => ({
+        userId: rbcSchedule.userId,
+        title: rbcSchedule.title,
+        start: rbcSchedule.start,
+        end: rbcSchedule.end,
+        description: rbcSchedule.description,
+        createdAt: rbcSchedule.createdAt,
       }));
-      setEvents(calendarEvents);
+      setRbcEvents(rbcCalendarEvents);
     } catch (err) {
       console.error('Error fetching schedules:', err);
     }
   };
 
-  const handleAddEvent = async (eventData) => {
+  const handleAddRbcEvent = async (rbcEventData) => {
     // Add a new event to the backend and update the calendar
     try {
-      const response = await axios.post(`${API_URL}/schedules`, {
-        ...eventData,
-        userId: 'user123', // Temporary user ID
+      const rbcResponse = await axios.post(`${API_URL}/rbc-schedules`, {
+        ...rbcEventData,
       });
-      setEvents([...events, {
-        title: `${response.data.title} (Mood: ${response.data.mood})`,
-        start: response.data.date,
-        location: response.data.location,
+      setRbcEvents([...rbcEvents, {
+        userId: rbcResponse.data.userId,
+        title: rbcResponse.data.title,
+        start: rbcResponse.data.start,
+        end: rbcResponse.data.end,
+        description: rbcResponse.data.description,
       }]);
     } catch (err) {
       console.error('Error adding schedule:', err);
     }
   };
 
-  const handleEventClick = (info) => {
-    // Show event details on click
-    alert(`Event: ${info.event.title}\nLocation: ${info.event.extendedProps.location}`);
+  // const handleEventClick = (info) => {
+  //   // Show event details on click
+  //   alert(`Event: ${info.event.title}\nLocation: ${info.event.extendedProps.location}`);
+  // };
+
+  // const handleDateClick = (info) => {
+  //   // Handle date click to potentially open event form (optional)
+  // };
+
+  const onEventResize = (data) => {
+    const { start, end } = data;
+
+    setRbcEvents((rbcEvents) => {
+      rbcEvents.start = start;
+      rbcEvents.end = end;
+      handleAddRbcEvent(rbcEvents)
+      return handleAddRbcEvent(rbcEvents);
+    });
   };
 
-  const handleDateClick = (info) => {
-    // Handle date click to potentially open event form (optional)
+  const onEventDrop = (data) => {
+    console.log(data);
   };
 
   return (
     <div className="App">
       <h1>Vimora Planner</h1>
-      <div className="calendar-container">
+      {/* <div className="calendar-container">
         <FullCalendar
           plugins={[dayGridPlugin, interactionPlugin]} // Plugins for calendar functionality
           initialView="dayGridMonth" // Default view as month
@@ -71,8 +95,23 @@ function App() {
           contentHeight="auto"
         />
       </div>
-      <EventForm onAddEvent={handleAddEvent} /> // Form for adding new events
+      <EventForm onAddEvent={handleAddEvent} /> // Form for adding new events */}
+      
+      <div className="big-calendar-test">
+        <DnDCalendar
+          localizer={localizer}
+          events={rbcEvents}
+          startAccessor="start"
+          endAccessor="end"
+          onEventDrop={onEventDrop}
+          onEventResize={onEventResize}
+          resizable
+          style={{ height: 500 }}
+        />
+      </div>
+      <RbcEventForm onAddEvent={handleAddRbcEvent}/>
     </div>
+    
   );
 }
 

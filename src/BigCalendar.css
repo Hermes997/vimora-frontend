@@ -1,0 +1,100 @@
+/* BigCalendar.css */
+
+/* Container for the calendar */
+.big-calendar-test {
+  padding: 20px;
+  background-color: #f9f9f9; /* Light gray background for a clean look */
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  max-width: 1000px;
+  margin: 0 auto; /* Center the calendar */
+}
+
+/* Main calendar container */
+.rbc-calendar {
+  font-family: 'Roboto', sans-serif; /* Modern, professional font */
+  background-color: #ffffff; /* White background for the calendar */
+  border: 1px solid #e0e0e0; /* Light border for definition */
+  border-radius: 8px;
+}
+
+/* Toolbar (month, week, day navigation) */
+.rbc-toolbar {
+  background-color: #4a90e2; /* Vimora accent color (blue) */
+  color: #ffffff;
+  padding: 10px;
+  border-radius: 8px 8px 0 0;
+}
+
+.rbc-toolbar button {
+  background-color: transparent;
+  border: none;
+  color: #ffffff;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.rbc-toolbar button:hover {
+  background-color: #357abd; /* Darker blue on hover */
+}
+
+.rbc-toolbar .rbc-active {
+  background-color: #357abd; /* Active button state */
+}
+
+/* Event styling */
+.rbc-event {
+  background-color: #4a90e2; /* Vimora blue for events */
+  border: none;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 14px;
+  color: #ffffff;
+  transition: transform 0.2s ease;
+}
+
+.rbc-event:hover {
+  transform: scale(1.05); /* Slight scale on hover for interactivity */
+}
+
+/* Selected event */
+.rbc-selected {
+  background-color: #357abd; /* Darker blue for selected events */
+}
+
+/* Day cells */
+.rbc-day-bg {
+  border: 1px solid #e0e0e0;
+}
+
+.rbc-today {
+  background-color: #e8f0fe; /* Light blue for today */
+}
+
+/* Time slots */
+.rbc-time-slot {
+  border-top: 1px solid #e0e0e0;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .big-calendar-test {
+    padding: 10px;
+    margin: 10px;
+  }
+
+  .rbc-calendar {
+    font-size: 12px;
+  }
+
+  .rbc-event {
+    font-size: 12px;
+    padding: 2px 4px;
+  }
+
+  .rbc-toolbar {
+    flex-direction: column;
+    gap: 8px;
+  }
+}
