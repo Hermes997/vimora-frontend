@@ -26,7 +26,6 @@ function App() {
     try {
       const rbcResponse = await axios.get(`${API_URL}/rbc-schedules`);
       const rbcCalendarEvents = rbcResponse.data.map(rbcSchedule => ({
-        userId: rbcSchedule.userId,
         title: rbcSchedule.title,
         start: rbcSchedule.start,
         end: rbcSchedule.end,
@@ -46,7 +45,6 @@ function App() {
         ...rbcEventData,
       });
       setRbcEvents([...rbcEvents, {
-        userId: rbcResponse.data.userId,
         title: rbcResponse.data.title,
         start: rbcResponse.data.start,
         end: rbcResponse.data.end,
@@ -57,18 +55,9 @@ function App() {
     }
   };
 
-  // const handleEventClick = (info) => {
-  //   // Show event details on click
-  //   alert(`Event: ${info.event.title}\nLocation: ${info.event.extendedProps.location}`);
-  // };
-
-  // const handleDateClick = (info) => {
-  //   // Handle date click to potentially open event form (optional)
-  // };
-
   const onEventResize = (data) => {
     const { start, end } = data;
-
+    
     setRbcEvents((rbcEvents) => {
       rbcEvents.start = start;
       rbcEvents.end = end;
@@ -84,19 +73,6 @@ function App() {
   return (
     <div className="App">
       <h1>Vimora Planner</h1>
-      {/* <div className="calendar-container">
-        <FullCalendar
-          plugins={[dayGridPlugin, interactionPlugin]} // Plugins for calendar functionality
-          initialView="dayGridMonth" // Default view as month
-          events={events} // Display events on calendar
-          eventClick={handleEventClick} // Handle event clicks
-          dateClick={handleDateClick} // Handle date clicks
-          height="auto"
-          contentHeight="auto"
-        />
-      </div>
-      <EventForm onAddEvent={handleAddEvent} /> // Form for adding new events */}
-      
       <div className="big-calendar-test">
         <DnDCalendar
           localizer={localizer}

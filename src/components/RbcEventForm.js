@@ -14,17 +14,11 @@ function RbcEventForm({ onAddEvent }) {
     // Handle form submission
     e.preventDefault();
     onAddEvent(newRbcEvent);
-    setNewRbcEvent({ userId: '', title: '', start: '', end: '',description: ''}); // Reset form
+    setNewRbcEvent({title: '', start: '', end: '',description: ''}); // Reset form
   };
 
   return (
     <div className="rbc-event-form">
-      <input
-        type="text"
-        placeholder="userId"
-        value={newRbcEvent.userId}
-        onChange={(e) => setNewRbcEvent({ ...newRbcEvent, userId: e.target.value })}
-      />
       <input
         type="text"
         placeholder="title"
