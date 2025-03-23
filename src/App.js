@@ -13,7 +13,7 @@ import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
 function App() {
   const [rbcEvents, setRbcEvents] = useState([]); // State for calendar events
   const API_URL = process.env.REACT_APP_API_URL;
-
+  const [error, setError] = useState('');
   // Fetch schedules on component mount
   useEffect(() => {
     fetchSchedules();
@@ -26,6 +26,7 @@ function App() {
     try {
       const rbcResponse = await axios.get(`${API_URL}/rbc-schedules`);
       const rbcCalendarEvents = rbcResponse.data.map(rbcSchedule => ({
+        eventID: rbcSchedule.eventID,
         title: rbcSchedule.title,
         start: rbcSchedule.start,
         end: rbcSchedule.end,
@@ -55,19 +56,66 @@ function App() {
     }
   };
 
-  const onEventResize = (data) => {
-    const { start, end } = data;
-    
-    setRbcEvents((rbcEvents) => {
-      rbcEvents.start = start;
-      rbcEvents.end = end;
-      handleAddRbcEvent(rbcEvents)
-      return handleAddRbcEvent(rbcEvents);
-    });
+  const handdleEventResize = async (resizeEventData) => {
+    try {
+      const { event, start, end } = resizeEventData;
+      const eventID = event.eventID;
+      console.log('resizeEventData:', resizeEventData);
+  
+      const startDate = start instanceof Date ? start : new Date(start);
+      const endDate = end instanceof Date ? end : new Date(end);
+  
+      if (isNaN(startDate) || isNaN(endDate)) {
+        throw new Error('Invalid start or end date');
+      }
+  
+      const rbcResponse = await axios.patch(`${API_URL}/rbc-schedules/${eventID}`, {
+        start: startDate.toISOString(),
+        end: endDate.toISOString(),
+      });
+  
+      setRbcEvents(prevEvents =>
+        prevEvents.map(rbcEvent =>
+          rbcEvent.eventID === eventID
+            ? { ...rbcEvent, start: new Date(rbcResponse.data.start), end: new Date(rbcResponse.data.end) }
+            : rbcEvent
+        )
+      );
+      setError('');
+    } catch (err) {
+      setError(err.response?.data?.error || 'Failed to update rbc schedule');
+      console.error('Error updating schedule:', err);
+    }
   };
-
-  const onEventDrop = (data) => {
-    console.log(data);
+  
+  const handleEventDrop = async ({ event, start, end }) => {
+    try {
+      const eventID = event.eventID;
+  
+      const startDate = start instanceof Date ? start : new Date(start);
+      const endDate = end instanceof Date ? end : new Date(end);
+  
+      if (isNaN(startDate) || isNaN(endDate)) {
+        throw new Error('Invalid start or end date');
+      }
+  
+      const rbcResponse = await axios.patch(`${API_URL}/rbc-schedules/${eventID}`, {
+        start: startDate.toISOString(),
+        end: endDate.toISOString(),
+      });
+  
+      setRbcEvents(prevEvents =>
+        prevEvents.map(rbcEvent =>
+          rbcEvent.eventID === eventID
+            ? { ...rbcEvent, start: new Date(rbcResponse.data.start), end: new Date(rbcResponse.data.end) }
+            : rbcEvent
+        )
+      );
+      setError('');
+    } catch (err) {
+      setError(err.response?.data?.error || 'Failed to update rbc schedule');
+      console.error('Error updating schedule:', err);
+    }
   };
 
   return (
@@ -79,12 +127,13 @@ function App() {
           events={rbcEvents}
           startAccessor="start"
           endAccessor="end"
-          onEventDrop={onEventDrop}
-          onEventResize={onEventResize}
+          onEventDrop={handleEventDrop}
+          onEventResize={handdleEventResize}
           resizable
           style={{ height: 500 }}
         />
       </div>
+      {error && <p style={{ color: 'red' }}>{error}</p>}
       <RbcEventForm onAddEvent={handleAddRbcEvent}/>
     </div>
     
