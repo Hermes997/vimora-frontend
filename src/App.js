@@ -6,8 +6,6 @@ import axios from 'axios';
 import RbcEventForm from './components/RbcEventForm';
 import './App.css';
 import './react-big-calendar.css';
-import "react-big-calendar/lib/addons/dragAndDrop/styles.css";
-import "react-big-calendar/lib/css/react-big-calendar.css";
 import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
 
 function App() {
@@ -24,18 +22,36 @@ function App() {
   const fetchSchedules = async () => {
     // Retrieve schedules from the backend API
     try {
-      const rbcResponse = await axios.get(`${API_URL}/rbc-schedules`);
-      const rbcCalendarEvents = rbcResponse.data.map(rbcSchedule => ({
-        eventID: rbcSchedule.eventID,
-        title: rbcSchedule.title,
-        start: rbcSchedule.start,
-        end: rbcSchedule.end,
-        description: rbcSchedule.description,
-        createdAt: rbcSchedule.createdAt,
-      }));
+      const response = await axios.get(`${API_URL}/rbc-schedules`);
+      const rbcCalendarEvents = response.data
+        .filter(rbcSchedule => {
+          const start = new Date(rbcSchedule.start);
+          const end = new Date(rbcSchedule.end);
+          if (isNaN(start) || isNaN(end)) {
+            console.error('Invalid date in rbcSchedule:', rbcSchedule);
+            return false;
+          }
+          return true;
+        })
+        .map(rbcSchedule => ({
+          id: rbcSchedule._id,
+          eventID: rbcSchedule.eventID,
+          title: rbcSchedule.title,
+          start: new Date(rbcSchedule.start),
+          end: new Date(rbcSchedule.end),
+          description: rbcSchedule.description,
+          createdAt: new Date(rbcSchedule.createdAt),
+        }));
       setRbcEvents(rbcCalendarEvents);
+      if (rbcCalendarEvents.length === 0) {
+        setError('No events found. Please add a new event.');
+      } else {
+        setError('');
+      }
     } catch (err) {
-      console.error('Error fetching schedules:', err);
+      const errorMessage = err.response?.data?.error || 'Failed to fetch rbc schedules. Server may be down.';
+      setError(errorMessage);
+      console.error('Error fetching rbc schedules:', err);
     }
   };
 
