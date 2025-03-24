@@ -5,7 +5,8 @@ import moment from 'moment'
 import axios from 'axios';
 import RbcEventForm from './components/RbcEventForm';
 import './App.css';
-import './react-big-calendar.css';
+import "react-big-calendar/lib/addons/dragAndDrop/styles.css";
+import "react-big-calendar/lib/css/react-big-calendar.css";
 import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
 
 function App() {
@@ -145,7 +146,7 @@ function App() {
           endAccessor="end"
           onEventDrop={handleEventDrop}
           onEventResize={handdleEventResize}
-          resizable
+          resizable={true}
           style={{ height: 500 }}
         />
       </div>
