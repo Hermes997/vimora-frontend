@@ -1,0 +1,41 @@
+.custom-event {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    padding: 2px 5px;
+    box-sizing: border-box;
+    position: relative;
+  }
+  
+  .event-title {
+    flex-grow: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  .delete-button {
+    position: absolute;
+    right: 15px; /* resize handle don't cover (.rbc-addons-dnd-resize-ew-anchor:last-child) */
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #ff0000;
+    font-size: 12px;
+    cursor: pointer;
+    padding: 0 5px;
+    line-height: 1;
+    opacity: 0;
+    transition: opacity 150ms;
+  }
+  
+  .rbc-event:hover .delete-button {
+    opacity: 1; /* when being hovered, show "x" button*/
+  }
+  
+  .delete-button:hover {
+    color: #cc0000;
+  }

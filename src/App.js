@@ -3,6 +3,7 @@ import React, {useState, useEffect } from 'react';
 import { Calendar, momentLocalizer } from 'react-big-calendar'
 import moment from 'moment'
 import axios from 'axios';
+import CustomEvent from './CustomEvent';
 import RbcEventForm from './components/RbcEventForm';
 import './App.css';
 import "react-big-calendar/lib/addons/dragAndDrop/styles.css";
@@ -135,6 +136,18 @@ function App() {
     }
   };
 
+  const deleteRbcSchedule = async (eventID) => {
+    try {
+      await axios.delete(`${API_URL}/rbc-schedules/${eventID}`);
+      await fetchSchedules();
+      setError('');
+    } catch (err) {
+      const errorMessage = err.response?.data?.error || 'Failed to delete event';
+      setError(errorMessage);
+      console.error('Error deleting rbc schedule:', err);
+    }
+  };
+
   return (
     <div className="App">
       <h1>Vimora Planner</h1>
@@ -148,6 +161,9 @@ function App() {
           onEventResize={handdleEventResize}
           resizable={true}
           style={{ height: 500 }}
+          components={{
+            event: (props) => <CustomEvent {...props} onDelete={deleteRbcSchedule} />,
+          }}
         />
       </div>
       {error && <p style={{ color: 'red' }}>{error}</p>}
