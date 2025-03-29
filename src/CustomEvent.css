@@ -7,6 +7,7 @@
     padding: 2px 5px;
     box-sizing: border-box;
     position: relative;
+    z-index: 1;/* lower priority z-index custom event */
   }
   
   .event-title {
@@ -30,6 +31,7 @@
     line-height: 1;
     opacity: 0;
     transition: opacity 150ms;
+    z-index: 2; /* show delete button over resize handle */
   }
   
   .rbc-event:hover .delete-button {
@@ -38,4 +40,9 @@
   
   .delete-button:hover {
     color: #cc0000;
+  }
+
+  /* resize handle "z-index" adjustment*/
+.rbc-addons-dnd .rbc-addons-dnd-resize-ew-anchor {
+    z-index: 3; /* showing resize handle over others */
   }

@@ -3,7 +3,7 @@ import './CustomEvent.css';
 
 const CustomEvent = ({ event, onDelete }) => {
   const handleDeleteClick = (e) => {
-    e.stopPropagation(); // 이벤트 클릭과 삭제 클릭 분리
+    e.stopPropagation(); // Seperate event click with delete click
     if (window.confirm(`Delete event "${event.title}"?`)) {
       onDelete(event.eventID);
     }
