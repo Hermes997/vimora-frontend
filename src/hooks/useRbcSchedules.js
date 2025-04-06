@@ -19,7 +19,7 @@ const useRbcSchedules = () => {
   const handleAddRbcEvent = async (rbcEventData) => {
     try {
       const newEvent = await addRbcEvent(rbcEventData);
-      await fetchSchedules(); // 새로고침
+      await fetchSchedules(); // refresh
       setError('');
     } catch (err) {
       setError(err.message);
@@ -27,7 +27,7 @@ const useRbcSchedules = () => {
     }
   };
 
-  const handleEventResize = async (resizeEventData) => {
+  const handleEventResize = async (resizeEventData, view) => {
     try {
       const { event, start, end } = resizeEventData;
       const eventID = event.eventID;
@@ -37,6 +37,13 @@ const useRbcSchedules = () => {
 
       if (isNaN(startDate) || isNaN(endDate)) {
         throw new Error('Invalid start or end date');
+      }
+
+      // If Month case, set time to 00:00
+      if (view === 'month') {
+        startDate.setHours(0, 0, 0, 0); // 00:00:00.000
+        endDate.setHours(0, 0, 0, 0);
+        alert('Event time set to 00:00 in Month view');
       }
 
       const updatedEvent = await updateRbcEvent(eventID, {

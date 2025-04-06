@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Calendar, momentLocalizer } from 'react-big-calendar';
 import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop';
 import moment from 'moment';
@@ -11,6 +11,13 @@ const localizer = momentLocalizer(moment);
 const DnDCalendar = withDragAndDrop(Calendar);
 
 const CalendarComponent = ({ events, onEventDrop, onEventResize, onDelete }) => {
+
+  const [view, setView] = useState('month'); // Default view: Month
+
+  const handleViewChange = (newView) => {
+    setView(newView);
+  };
+
   return (
     <div className="big-calendar-test">
       <DnDCalendar
@@ -19,7 +26,9 @@ const CalendarComponent = ({ events, onEventDrop, onEventResize, onDelete }) => 
         startAccessor="start"
         endAccessor="end"
         onEventDrop={onEventDrop}
-        onEventResize={onEventResize}
+        onEventResize={(resizeEventData) => onEventResize(resizeEventData, view)}
+        onView={handleViewChange}
+        view={view}
         resizable={true}
         style={{ height: 500 }}
         components={{
