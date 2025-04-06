@@ -1,5 +1,5 @@
 import React from 'react';
-import './CustomEvent.css';
+import '../styles/CustomEvent.css';
 
 const CustomEvent = ({ event, onDelete }) => {
   const handleDeleteClick = (e) => {
