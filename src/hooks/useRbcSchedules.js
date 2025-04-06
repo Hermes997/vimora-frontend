@@ -4,6 +4,7 @@ import { fetchRbcSchedules, addRbcEvent, updateRbcEvent, deleteRbcEvent } from '
 const useRbcSchedules = () => {
   const [rbcEvents, setRbcEvents] = useState([]);
   const [error, setError] = useState('');
+  const [snackbarMessage, setSnackbarMessage] = useState(''); // For snack bar
 
   const fetchSchedules = async () => {
     try {
@@ -21,6 +22,7 @@ const useRbcSchedules = () => {
       const newEvent = await addRbcEvent(rbcEventData);
       await fetchSchedules(); // refresh
       setError('');
+      setSnackbarMessage('Event added successfully');
     } catch (err) {
       setError(err.message);
       console.error('Error adding schedule:', err);
@@ -41,9 +43,10 @@ const useRbcSchedules = () => {
 
       // If Month case, set time to 00:00
       if (view === 'month') {
+        console.log('Setting time to 00:00 in Month view');
         startDate.setHours(0, 0, 0, 0); // 00:00:00.000
         endDate.setHours(0, 0, 0, 0);
-        alert('Event time set to 00:00 in Month view');
+        setSnackbarMessage('Event time set to 00:00 in Month view'); // output snack bar
       }
 
       const updatedEvent = await updateRbcEvent(eventID, {
@@ -89,6 +92,7 @@ const useRbcSchedules = () => {
         )
       );
       setError('');
+      setSnackbarMessage('Event moved successfully');
     } catch (err) {
       setError(err.message);
       console.error('Error updating schedule:', err);
@@ -100,6 +104,7 @@ const useRbcSchedules = () => {
       await deleteRbcEvent(eventID);
       await fetchSchedules();
       setError('');
+      setSnackbarMessage('Event deleted successfully');
     } catch (err) {
       setError(err.message);
       console.error('Error deleting rbc schedule:', err);
@@ -118,6 +123,8 @@ const useRbcSchedules = () => {
     handleEventResize,
     handleEventDrop,
     deleteRbcSchedule,
+    snackbarMessage,
+    setSnackbarMessage,
   };
 };
 
